@@ -369,7 +369,7 @@ int main(int argc, char **argv) {
   // Create the springs
   nbSpring = 6;
   int springDef[12] = {0, 1, 1, 3, 2, 3, 0, 2, 1, 2, 0, 3};
-  float k = 1000.0;
+  float k = 2.0;
   spring->_k = k;
   for (int iSpring = 0; iSpring < nbSpring; ++iSpring) {
     // Set the spring properties
@@ -397,7 +397,7 @@ int main(int argc, char **argv) {
     }
   }
   // Reach equilibrium
-  dt = 1.0 / 50.0;
+  dt = 1.0 / 25.0;
   t = SpringSysStepToRest(theSpringSys, dt, tMax);
   if (t <= tMax) {
     fprintf(stderr,"Equilibrium reach in %.3f second\n", t);
@@ -447,8 +447,8 @@ simulation with current state\n");
       SpringSysMass *m = SpringSysGetMass(theSpringSys, iMass);
       // If the mass is not null
       if (m != NULL) {
-        // Apply gravity
-        m->_speed[1] -= 0.5 * m->_mass;
+        // Apply attraction toward bottom
+        m->_speed[1] -= 1.0 * dt * m->_mass;
       }
     }
     // Step the SpringSys
@@ -460,20 +460,19 @@ simulation with current state\n");
       // If the mass is not null and has collided with the ground
       if (m != NULL && m->_pos[1] < m->_pos[0] * slope) {
         // Correct the mass position
-        m->_pos[1] = m->_pos[0] * slope + 0.001;
+        m->_pos[1] = m->_pos[0] * slope;
         // Bounce the mass off the ground
         float ls = sqrt(pow(m->_speed[0], 2.0) + pow(m->_speed[1], 2.0));
         if (ls > SPRINGSYS_EPSILON) {
           float s[2];
           s[0] = m->_speed[0] / ls;
           s[1] = m->_speed[1] / ls;
-          float dissip = 0.3 * (s[0] * v[0] + s[1] * v[1]);
           float w[2];
           w[0] = s[0] + v[0] * 2.0;
           w[1] = s[1] + v[1] * 2.0;
           float lw = sqrt(pow(w[0], 2.0) + pow(w[1], 2.0));
-          m->_speed[0] = dissip * w[0] / lw * ls;
-          m->_speed[1] = dissip * w[1] / lw * ls;
+          m->_speed[0] = 0.9 * w[0] / lw * ls;
+          m->_speed[1] = 0.9 * w[1] / lw * ls;
         } else {
           m->_speed[0] = 0.0;
           m->_speed[1] = 0.0;

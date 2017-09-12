@@ -18,7 +18,7 @@ SpringSys* SpringSysCreate(int nbDim) {
     // Set the number of dimensions
     ret->_nbDim = nbDim;
     // Set the dissipation coefficient
-    ret->_dissip = 0.01;
+    ret->_dissip = 0.1;
     // Create the gset of masses
     ret->_masses = GSetCreate();
     // If we couldn't create the gset
@@ -791,7 +791,7 @@ void SpringSysStep(SpringSys *sys, float dt) {
       // For each dimension
       for (int iDim = 0; iDim < sys->_nbDim; ++iDim) {
         // Apply the dissipation to the speed
-        m->_speed[iDim] *= (1.0 - sys->_dissip);
+        m->_speed[iDim] *= pow(1.0 - sys->_dissip, dt);
         // Apply the stress to the speed
         m->_speed[iDim] += m->_stress[iDim] * dt;
         // Apply the speed to the position

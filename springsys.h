@@ -70,7 +70,7 @@ typedef struct SpringSys {
 // ================ Functions declaration ====================
 
 // Create a new SpringSys with number of dimensions 'nbDim' (in [1,3])
-// Default dissipation coefficient _dissip = 0.01
+// Default dissipation coefficient _dissip = 0.1
 // Return NULL if we couldn't create the Springsys
 SpringSys* SpringSysCreate(int nbDim);
 
