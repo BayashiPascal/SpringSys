@@ -31,6 +31,8 @@ typedef struct SpringSysMass {
   float _mass;
   // Fixed flag, if true the mass doesn't move
   bool _fixed;
+  // Additional data
+  void *_data;
 } SpringSysMass;
 
 typedef struct SpringSysSpring {
@@ -122,6 +124,7 @@ SpringSysSpring* SpringSysCreateSpring(void);
 void SpringSysFree(SpringSys **sys);
 
 // Free the memory used by a SpringSysMass
+// _data must  be freed by the calling function if used
 // Do nothing if arguments are invalid
 void SpringSysMassFree(SpringSysMass **m);
 
