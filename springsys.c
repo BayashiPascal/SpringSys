@@ -338,6 +338,7 @@ SpringSysMass* SpringSysCreateMass(void) {
     ret->_stress[0] = ret->_stress[1] = ret->_stress[2] = 0.0;
     ret->_mass = 1.0;
     ret->_fixed = false;
+    ret->_data = NULL;
   }
   // Return the new mass
   return ret;
@@ -400,6 +401,7 @@ void SpringSysFree(SpringSys **sys) {
 }
 
 // Free the memory used by a SpringSysMass
+// _data must  be freed by the calling function if used
 // Do nothing if arguments are invalid
 void SpringSysMassFree(SpringSysMass **m) {
   // Check arguments
