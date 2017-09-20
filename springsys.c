@@ -43,6 +43,8 @@ SpringSys* SpringSysCreate(int nbDim) {
 }
 
 // Clone the SpringSys 'sys'
+// If _data of masses must be cloned it's up to the 
+// calling function
 // Return NULL if we couldn't clone the Springsys
 SpringSys* SpringSysClone(SpringSys *sys) {
   // Check arguments
@@ -574,6 +576,7 @@ int SpringSysGetNbSpring(SpringSys *sys) {
 }
 
 // Add a copy of the mass 'm' to the SpringSys
+// If _data must be cloned it's up to the calling function
 // Return false if the arguments are invalid or memory allocation failed
 // else return true
 bool SpringSysAddMass(SpringSys *sys, SpringSysMass *m) {
