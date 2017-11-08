@@ -13,42 +13,48 @@ void DrawLegendTGA_1D(SpringSys *sys, TGA *tga, float t, float dt,
   TGAPixel *black = TGAGetBlackPixel();
   TGAPencilSetColor(pen, black);
   TGAPencilSetAntialias(pen, true);
-  TGAFreePixel(&black);
+  TGAPixelFree(&black);
   // Create a font
   TGAFont *font = TGAFontCreate(tgaFontDefault);
   TGAFontSetSize(font, 0.5 * (float)margin);
   // Declare variables for tracing
-  float p[2];
+  VecFloat *p = VecFloatCreate(2);
+  VecFloat *q = VecFloatCreate(2);
   char s[100] = {0};
-  float q[2];
   // Draw the abciss
-  q[1] = p[1] = 0.25 * (float)margin;
-  for (p[0] = 0.0; p[0] < tMax; p[0] += 5.0) {
+  VecSet(q, 1, 0.25 * (float)margin);
+  VecSet(p, 1, 0.25 * (float)margin);
+  for (VecSet(p, 0, 0.0); VecGet(p, 0) < tMax; 
+    VecSet(p, 0, VecGet(p, 0) + 5.0)) {
     // Update the label
-    sprintf(s, "%.1f", p[0]);
+    sprintf(s, "%.1f", VecGet(p, 0));
     // Print the label
-    q[0] = p[0] / dt + 0.5 * (float)margin;
+    VecSet(q, 0, VecGet(p, 0) / dt + 0.5 * (float)margin);
     TGAPrintString(tga, pen, font, (unsigned char*)s, q);
   }
   // Draw the ordinate
-  q[0] = p[0] = 0.25 * (float)margin;
-  for (p[1] = 0.0; p[1] < lMax; p[1] += 1.0) {
+  VecSet(q, 0, 0.25 * (float)margin);
+  VecSet(p, 0, 0.25 * (float)margin);
+  for (VecSet(p, 1, 0.0); VecGet(p, 1) < lMax; VecSet(p, 1, VecGet(p, 1) + 1.0)) {
     // Update the label
-    sprintf(s, "%d", (int)round(p[1]));
+    sprintf(s, "%d", (int)round(VecGet(p, 1)));
     // Print the label
-    q[1] = p[1] / lPixel + (float)margin;
+    VecSet(q, 1, VecGet(p, 1) / lPixel + (float)margin);
     TGAPrintString(tga, pen, font, (unsigned char*)s, q);
   }
-  p[0] = q[0] = (float)margin;
-  p[1] = (float)margin;
-  q[1] = lMax / lPixel + (float)margin;
+  VecSet(p, 0, (float)margin);
+  VecSet(q, 0, (float)margin);
+  VecSet(p, 1, (float)margin);
+  VecSet(q, 1, lMax / lPixel + (float)margin);
   TGAPencilSetShapePixel(pen);
   TGAPencilSetAntialias(pen, false);
   TGADrawLine(tga, p, q, pen);
   // Free the pencil
-  TGAFreePencil(&pen);
+  TGAPencilFree(&pen);
   // Free the font
   TGAFreeFont(&font);
+  VecFree(&p);
+  VecFree(&q);
 }
 
 // Function to draw the SpringSys of the first example in one dimension
@@ -59,12 +65,12 @@ void DrawTGA_1D(SpringSys *sys, TGA *tga, float t, float dt,
   TGAPixel *black = TGAGetBlackPixel();
   TGAPencilSetColor(pen, black);
   TGAPencilSetShapePixel(pen);
-  TGAFreePixel(&black);
+  TGAPixelFree(&black);
   // Declare variables for tracing
-  float p[2];
+  VecFloat *p = VecFloatCreate(2);
   // Position in abciss is the center of the pixel corresponding to
   // the time (scale by dt and shift by margin)
-  p[0] = t / dt + 0.5 * dt + (float)margin;
+  VecSet(p, 0, t / dt + 0.5 * dt + (float)margin);
   // Draw the masses of the SpringSys
   int nbMass = SpringSysGetNbMass(sys);
   for (int iMass = 0; iMass < nbMass; ++iMass) {
@@ -72,12 +78,13 @@ void DrawTGA_1D(SpringSys *sys, TGA *tga, float t, float dt,
     SpringSysMass *m = SpringSysGetMass(sys, iMass);
     // If the mass is not null
     if (m != NULL) {
-      p[1] = m->_pos[0] / lPixel + (float)margin;
+      VecSet(p, 1, m->_pos[0] / lPixel + (float)margin);
       TGAStrokePix(tga, p, pen);
     }
   }
   // Free the pencil
-  TGAFreePencil(&pen);
+  TGAPencilFree(&pen);
+  VecFree(&p);
 }
 
 // Function to draw the SpringSys of the second example in two dimensions
@@ -88,55 +95,60 @@ void DrawLegendTGA_2D(SpringSys *sys, TGA *tga, float lMax,
   TGAPixel *black = TGAGetBlackPixel();
   TGAPencilSetColor(pen, black);
   TGAPencilSetAntialias(pen, true);
-  TGAFreePixel(&black);
+  TGAPixelFree(&black);
   // Create a font
   TGAFont *font = TGAFontCreate(tgaFontDefault);
   TGAFontSetSize(font, 0.25 * (float)margin);
   // Declare variables for tracing
-  float p[2];
+  VecFloat *p = VecFloatCreate(2);
+  VecFloat *q = VecFloatCreate(2);
   char s[100] = {0};
-  float q[2];
   // Draw the abciss
-  q[1] = p[1] = 0.25 * (float)margin;
-  for (p[0] = 0.0; p[0] < lMax; p[0] += 0.5) {
+  VecSet(q, 1, 0.25 * (float)margin);
+  VecSet(p, 1, 0.25 * (float)margin);
+  for (VecSet(p, 0, 0.0); VecGet(p, 0) < lMax; VecSet(p, 0, VecGet(p, 0) + 0.5)) {
     // Update the label
-    sprintf(s, "%.1f", p[0]);
+    sprintf(s, "%.1f", VecGet(p, 0));
     // Print the label
-    q[0] = p[0] / lPixel + 0.75 * (float)margin;
+    VecSet(q, 0, VecGet(p, 0) / lPixel + 0.75 * (float)margin);
     TGAPrintString(tga, pen, font, (unsigned char*)s, q);
   }
   // Draw the ordinate
-  q[0] = p[0] = 0.25 * (float)margin;
-  for (p[1] = 0.0; p[1] < lMax; p[1] += 1.0) {
+  VecSet(q, 0, 0.25 * (float)margin);
+  VecSet(p, 0, 0.25 * (float)margin);
+  for (VecSet(p, 1, 0.0); VecGet(p, 1) < lMax; VecSet(p, 1, VecGet(p,1) + 1.0)) {
     // Update the label
-    sprintf(s, "%.1f", p[1]);
+    sprintf(s, "%.1f", VecGet(p, 1));
     // Print the label
-    q[1] = p[1] / lPixel + (float)margin;
+    VecSet(q, 1, VecGet(p, 1) / lPixel + (float)margin);
     TGAPrintString(tga, pen, font, (unsigned char*)s, q);
   }
   // Draw the k coefficient
   TGAFontSetSize(font, 0.5 * (float)margin);
   sprintf(s, "k=%.1f", k);
-  q[0] = 0.25 / lPixel + (float)margin;
-  q[1] = 3.0 / lPixel + (float)margin;
+  VecSet(q, 0, 0.25 / lPixel + (float)margin);
+  VecSet(q, 1, 3.0 / lPixel + (float)margin);
   TGAPrintString(tga, pen, font, (unsigned char*)s, q);
   // Draw the axis
   TGAPencilSetShapePixel(pen);
   TGAPencilSetAntialias(pen, false);
-  p[0] = p[1] = (float)margin;
-  q[0] = (float)margin;
-  q[1] = lMax / lPixel + (float)margin;
+  VecSet(p, 0, (float)margin);
+  VecSet(p, 1, (float)margin);
+  VecSet(q, 0, (float)margin);
+  VecSet(q, 1, lMax / lPixel + (float)margin);
   TGADrawLine(tga, p, q, pen);
-  q[0] = lMax / lPixel + (float)margin;
-  q[1] = (float)margin;
+  VecSet(q, 0, lMax / lPixel + (float)margin);
+  VecSet(q, 1, (float)margin);
   TGADrawLine(tga, p, q, pen);
   // Draw the ground
-  q[1] = slope * lMax / lPixel + (float)margin;
+  VecSet(q, 1, slope * lMax / lPixel + (float)margin);
   TGADrawLine(tga, p, q, pen);
   // Free the pencil
-  TGAFreePencil(&pen);
+  TGAPencilFree(&pen);
   // Free the font
   TGAFreeFont(&font);
+  VecFree(&p);
+  VecFree(&q);
 }
 
 // Function to draw the SpringSys of the second example in two dimensions
@@ -146,10 +158,10 @@ void DrawTGA_2D(SpringSys *sys, TGA *tga, float lPixel, int margin) {
   TGAPixel *black = TGAGetBlackPixel();
   TGAPencilSetColor(pen, black);
   TGAPencilSetShapePixel(pen);
-  TGAFreePixel(&black);
+  TGAPixelFree(&black);
   // Declare variables for tracing
-  float p[2];
-  float q[2];
+  VecFloat *p = VecFloatCreate(2);
+  VecFloat *q = VecFloatCreate(2);
   // Set the color of each mass
   unsigned char rgba[16] = 
     {255,0,0,255, 0,255,0,255, 0,0,255,255, 255,255,0,255};
@@ -168,16 +180,18 @@ void DrawTGA_2D(SpringSys *sys, TGA *tga, float lPixel, int margin) {
       SpringSysMass *mA = SpringSysGetMass(sys, s->_mass[0]);
       SpringSysMass *mB = SpringSysGetMass(sys, s->_mass[1]);
       // Draw the line between the mass
-      p[0] = mA->_pos[0] / lPixel + (float)margin;
-      p[1] = mA->_pos[1] / lPixel + (float)margin;
-      q[0] = mB->_pos[0] / lPixel + (float)margin;
-      q[1] = mB->_pos[1] / lPixel + (float)margin;
+      VecSet(p, 0, mA->_pos[0] / lPixel + (float)margin);
+      VecSet(p, 1, mA->_pos[1] / lPixel + (float)margin);
+      VecSet(q, 0, mB->_pos[0] / lPixel + (float)margin);
+      VecSet(q, 1, mB->_pos[1] / lPixel + (float)margin);
       TGAPencilSetModeColorBlend(pen, s->_mass[0], s->_mass[1]);
       TGADrawLine(tga, p, q, pen);
     }
   }
   // Free the pencil
-  TGAFreePencil(&pen);
+  TGAPencilFree(&pen);
+  VecFree(&p);
+  VecFree(&q);
 }
 
 int main(int argc, char **argv) {
@@ -261,11 +275,11 @@ int main(int argc, char **argv) {
   int margin = 20;
   // Create a TGA to draw the SpringSys
   TGAPixel *white = TGAGetWhitePixel();
-  short dim[2];
-  dim[0] = (int)round(tMax / dt) + margin * 2;
-  dim[1] = (int)round(lMax / lPixel) + margin * 2;
+  VecShort *dim = VecShortCreate(2);
+  VecSet(dim, 0, (int)round(tMax / dt) + margin * 2);
+  VecSet(dim, 1, (int)round(lMax / lPixel) + margin * 2);
   TGA* tga = TGACreate(dim, white);
-  TGAFreePixel(&white);
+  TGAPixelFree(&white);
   // If the TGA couldn't be created
   if (tga == NULL) {
     // Free memory
@@ -415,8 +429,8 @@ simulation with current state\n");
   white = TGAGetWhitePixel();
   lMax = 3.0;
   margin = 30;
-  dim[0] = (int)round(lMax / lPixel) + margin * 2;
-  dim[1] = (int)round(lMax / lPixel) + margin * 2;
+  VecSet(dim, 0, (int)round(lMax / lPixel) + margin * 2);
+  VecSet(dim, 1, (int)round(lMax / lPixel) + margin * 2);
   tga = TGACreate(dim, white);
   // If the TGA couldn't be created
   if (tga == NULL) {
@@ -424,7 +438,7 @@ simulation with current state\n");
     SpringSysFree(&theSpringSys);
     SpringSysMassFree(&mass);
     SpringSysSpringFree(&spring);
-    TGAFreePixel(&white);
+    TGAPixelFree(&white);
     // Stop
     return 1;
   }
@@ -542,12 +556,13 @@ simulation with current state\n");
   SpringSysRemoveMass(theSpringSys, 3);
   SpringSysPrint(theSpringSys, stdout);
   // Free memory
-  TGAFreePixel(&white);
+  TGAPixelFree(&white);
   SpringSysFree(&theSpringSys);
   SpringSysMassFree(&mass);
   SpringSysSpringFree(&spring);
   // Free memory
   SpringSysFree(&theSpringSys);
+  VecFree(&dim);
   return 0;
 }
 
